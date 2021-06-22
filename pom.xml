@@ -230,9 +230,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:git://github.com/increff/commons-lang.git</connection>
-		<developerConnection>scm:git:git@github.com:increff/commons-lang.git</developerConnection>
-		<url>https://github.com/increff/commons-lang</url>
+		<connection>scm:git:git://github.com/increff/commons-gelf.git</connection>
+		<developerConnection>scm:git:git@github.com:increff/commons-gelf.git</developerConnection>
+		<url>https://github.com/increff/commons-gelf</url>
 		<tag>HEAD</tag>
 	</scm>
 
