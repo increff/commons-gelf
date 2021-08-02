@@ -24,8 +24,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 public class GelfEncoder {
 
-	// It is 32_000, but just to be sure we have kept it has 30_000 bytes
-	private static final int MAX_FIELD_SIZE = 30_000;
+	private static final int MAX_FIELD_SIZE = 80_000;
 	private final static JsonFactory jsonFactory;
 
 	static {
