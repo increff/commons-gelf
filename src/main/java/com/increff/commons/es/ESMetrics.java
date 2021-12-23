@@ -19,6 +19,7 @@ public class ESMetrics {
 	private int numProcessed;
 	private int numSuccess;
 	private int numDropped;
+	private int numReceived;
 
 	public synchronized int getNumSuccess() {
 		return numSuccess;
@@ -32,9 +33,17 @@ public class ESMetrics {
 		return numDropped;
 	}
 
+	public synchronized int getNumReceived() {
+		return numReceived;
+	}
+
 	// protected HELPER METHODS
 	protected synchronized void addNumProcessed(int val) {
 		numProcessed += val;
+	}
+
+	protected synchronized void addNumRecieved(int val) {
+		numReceived += val;
 	}
 
 	protected synchronized void addNumSuccess(int val) {
