@@ -93,7 +93,7 @@ public class ESManager implements Runnable {
     // FOR MANAGING MESSAGES
     public synchronized void add(ESRequest req) {
         // we want to keep the latest request, so remove first message if queue is full
-        if (q.remainingCapacity() < 5000) {
+        if (q.remainingCapacity() < 10) {
             ESRequest dropReq = getFirst();
             dropRequest(dropReq);
         }

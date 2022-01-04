@@ -47,7 +47,7 @@
 		<!-- Test Dependencies -->
 		<commons-io.version>2.5</commons-io.version>
 
-		<elastic.version>7.9.1</elastic.version>
+		<elastic.version>7.16.2</elastic.version>
 
 		<lombok.version>1.16.20</lombok.version>
 
