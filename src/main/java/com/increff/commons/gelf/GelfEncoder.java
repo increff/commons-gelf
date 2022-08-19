@@ -31,6 +31,7 @@ public class GelfEncoder {
 		jsonFactory = new JsonFactory();
 	}
 
+
 	public static String computeJson(GelfRequest req) throws IOException {
 
 		StringWriter w = new StringWriter();
