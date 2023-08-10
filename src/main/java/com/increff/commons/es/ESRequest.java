@@ -47,5 +47,6 @@ public class ESRequest {
 	private ZonedDateTime timestamp; //
 	private int durationInMillis; // RTT
 	private ESRequestStatus status;
-	private Map<String, Object> additionalFields;
+	private String request;
+	private String response;
 }
