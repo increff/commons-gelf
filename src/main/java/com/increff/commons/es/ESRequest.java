@@ -20,6 +20,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Map;
 
 /**
  * ELK Request component
@@ -46,4 +47,5 @@ public class ESRequest {
 	private ZonedDateTime timestamp; //
 	private int durationInMillis; // RTT
 	private ESRequestStatus status;
+	private Map<String, Object> additionalFields;
 }

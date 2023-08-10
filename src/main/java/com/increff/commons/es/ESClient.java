@@ -49,7 +49,7 @@ public class ESClient {
 
 		this.metrics = new ESMetrics();
 
-		RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost(baseUrl, port, "https"));
+		RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost(baseUrl, port, "http"));
 		restClientBuilder.setHttpClientConfigCallback(getHttpClientConfig(credentialsProvider));
 
 		this.client = new RestHighLevelClient(restClientBuilder);
