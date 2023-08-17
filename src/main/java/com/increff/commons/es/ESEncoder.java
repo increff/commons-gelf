@@ -45,7 +45,12 @@ public class ESEncoder {
         g.writeStringField("request_name", req.getRequestName());
         g.writeNumberField("duration_millis", req.getDurationInMillis());
         g.writeStringField("status", req.getStatus().name());
-
+        g.writeStringField("requestBody", req.getRequestBody());
+        g.writeStringField("responseBody", req.getResponseBody());
+        g.writeStringField("http_headers", req.getHttpHeaders());
+        g.writeStringField("http_status", req.getHttpStatus());
+        g.writeStringField("end_timestamp", req.getEndTimestamp().withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime().toString());
+        g.writeStringField("http_method", req.getHttpMethod());
         g.close();
         return w.toString();
     }

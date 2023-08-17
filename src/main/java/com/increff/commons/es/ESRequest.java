@@ -18,7 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 /**
@@ -44,6 +43,12 @@ public class ESRequest {
 	private String requestName;
 	private String url;
 	private ZonedDateTime timestamp; //
+	private ZonedDateTime endTimestamp;
 	private int durationInMillis; // RTT
 	private ESRequestStatus status;
+	private String requestBody;
+	private String responseBody;
+	private String httpHeaders;
+	private String httpMethod;
+	private String httpStatus;
 }
