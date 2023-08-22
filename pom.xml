@@ -17,7 +17,7 @@
 
 	<groupId>com.increff.commons</groupId>
 	<artifactId>commons-gelf</artifactId>
-	<version>1.16</version>
+	<version>1.17-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>commons-gelf</name>
