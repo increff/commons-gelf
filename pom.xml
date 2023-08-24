@@ -230,8 +230,8 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:git:git://github.com/increff/commons-gelf.git</connection>
-		<developerConnection>scm:git:git@github.com:increff/commons-gelf.git</developerConnection>
+		<connection>scm:git:https://github.com/increff/commons-gelf.git</connection>
+		<developerConnection>scm:git:https://github.com/increff/commons-gelf.git</developerConnection>
 		<url>https://github.com/increff/commons-gelf</url>
 		<tag>commons-gelf-1.3</tag>
 	</scm>
