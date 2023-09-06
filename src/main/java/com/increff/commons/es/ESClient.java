@@ -14,12 +14,15 @@
 
 package com.increff.commons.es;
 
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.index.IndexRequest;
@@ -50,11 +53,19 @@ public class ESClient {
 		this.metrics = new ESMetrics();
 
 		RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost(baseUrl, port, "http"));
-		restClientBuilder.setHttpClientConfigCallback(getHttpClientConfig(credentialsProvider));
+		restClientBuilder.setHttpClientConfigCallback(getHttpClientConfig(credentialsProvider)).setDefaultHeaders(compatibilityHeaders());
 
 		this.client = new RestHighLevelClient(restClientBuilder);
 
+
 		setupListener();
+	}
+
+	private Header[] compatibilityHeaders() {
+		return new Header[]{
+				new BasicHeader(HttpHeaders.ACCEPT, "application/vnd.elasticsearch+json;compatible-with=7"),
+				new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/vnd.elasticsearch+json;compatible-with=7")
+		};
 	}
 
     private RestClientBuilder.HttpClientConfigCallback getHttpClientConfig(CredentialsProvider credentialsProvider) {
