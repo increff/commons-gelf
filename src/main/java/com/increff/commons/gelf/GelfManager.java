@@ -14,8 +14,11 @@
 
 package com.increff.commons.gelf;
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import lombok.extern.log4j.Log4j;
 import org.springframework.web.client.HttpStatusCodeException;
 
 /*
@@ -38,6 +41,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 
  */
 /** this is under development, do not use this class **/
+@Log4j
 public class GelfManager implements Runnable {
 
 	private static int RETRY_MAX_COUNT = 10;
@@ -48,6 +52,8 @@ public class GelfManager implements Runnable {
 	private GelfMetrics m;
 	private GelfClient c;
 	private LinkedBlockingDeque<GelfRequest> q;
+
+	private double avgGraylog;
 	private boolean running;
 	private int retryCount;
 	private IGelfLogProvider logProvider;
@@ -56,6 +62,7 @@ public class GelfManager implements Runnable {
 		this.q = new LinkedBlockingDeque<>(MAX_QUEUE_SIZE);
 		this.m = new GelfMetrics();
 		this.c = new GelfClient(baseUrl);
+		this.avgGraylog = -1;
 	}
 
 	// FOR STARTING AND STOPPING
@@ -111,6 +118,7 @@ public class GelfManager implements Runnable {
 	public synchronized void addLargeReq(GelfRequest req) {
 		if (q.remainingCapacity() < 10) {
 			GelfRequest dropReq = getFirst();
+			log.info("Graylog Dropping Request: queue capacity: " + q.remainingCapacity());
 			dropRequest(dropReq);
 		}
 		q.offer(req);
@@ -170,8 +178,19 @@ public class GelfManager implements Runnable {
 			try {
 				req = getFirst();
 				if (req != null) {
+					ZonedDateTime t1 = ZonedDateTime.now();
 					c.send(req);
+					ZonedDateTime t2 = ZonedDateTime.now();
+					log.info("Graylog send to graylog duration: " + Duration.between(t1, t2).toMillis());
 					errStatus = 200;
+					int time = (int) Duration.between(t1, t2).toMillis();
+					if(avgGraylog == -1)
+						avgGraylog = time;
+					else{
+						avgGraylog += time;
+						avgGraylog = avgGraylog/2.0;
+					}
+					log.info("Graylog Average: " + avgGraylog);
 					retryCount = 0;
 					m.addNumSuccess(1);
 				}

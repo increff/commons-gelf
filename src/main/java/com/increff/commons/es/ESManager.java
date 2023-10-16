@@ -12,8 +12,14 @@ package com.increff.commons.es;/*
  * the License.
  */
 
+import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j;
 import org.springframework.web.client.HttpStatusCodeException;
 
 /*
@@ -35,16 +41,19 @@ import org.springframework.web.client.HttpStatusCodeException;
  *
 
  */
+@Log4j
 public class ESManager implements Runnable {
 
     private static int RETRY_MAX_COUNT = 10;
     private static int RETRY_WAIT_TIME = 60_000; // 60 seconds
     private static int MAX_QUEUE_SIZE = 1000;
     private static int EMPTY_WAIT_TIME = 1_000; // 1 second
-
+    private static Long dropCount = 0L;
     private ESMetrics m;
     private ESClient c;
     private LinkedBlockingDeque<ESRequest> q;
+
+    private double avgELK;
     private boolean running;
     private int retryCount;
     private IESLogProvider logProvider;
@@ -53,6 +62,7 @@ public class ESManager implements Runnable {
         this.q = new LinkedBlockingDeque<>(MAX_QUEUE_SIZE);
         this.m = new ESMetrics();
         this.c = new ESClient(baseUrl, port, user, password);
+        this.avgELK = -1;
     }
 
     // FOR STARTING AND STOPPING
@@ -95,6 +105,24 @@ public class ESManager implements Runnable {
         // we want to keep the latest request, so remove first message if queue is full
         if (q.remainingCapacity() < 10) {
             ESRequest dropReq = getFirst();
+            log.info("Dropping ELK request: capacity: " + q.remainingCapacity() + " total dropped: " + ++dropCount);
+            if(req.getRequestName().equals("FORWARD_ORDER_NOTIFICATION_ORDER_CREATION")){
+                String shipmentId = null;
+                try{
+                    ObjectMapper objectMapper = new ObjectMapper();
+
+                    JsonNode jsonNode = objectMapper.readTree(dropReq.getRequestBody());
+
+                    shipmentId = jsonNode.get("shipmentId").asText();
+
+                } catch (Exception e) {
+                    log.error("Error in getting shipment id from json");
+                }
+                log.info("Dropping FONOC : shipment_id : " + shipmentId);
+            }
+            else {
+                log.error("Dropping Request: request name: " + dropReq.getRequestName());
+            }
             dropRequest(dropReq);
         }
         q.offer(req);
@@ -154,16 +182,30 @@ public class ESManager implements Runnable {
             try {
                 req = getFirst();
                 if (req != null) {
+                    ZonedDateTime t1 = ZonedDateTime.now();
                     c.send(req);
+                    ZonedDateTime t2 = ZonedDateTime.now();
                     errStatus = 200;
+                    log.info("send to elk duration: " + Duration.between(t1, t2).toMillis());
+                    int time = (int) Duration.between(t1, t2).toMillis();
+                    if(avgELK == -1)
+                        avgELK = time;
+                    else{
+                        avgELK += time;
+                        avgELK = avgELK/2.0;
+                    }
+
+                    log.info("ELK average: " + avgELK);
                     retryCount = 0;
                     m.addNumSuccess(1);
                 }
             } catch (HttpStatusCodeException e) {
                 errStatus = e.getRawStatusCode();
+                log.error("error in sending log to elk: " + Arrays.toString(e.getStackTrace()));
                 retryCount++;
             } catch (Exception e) {
                 errStatus = 9999; // Some uknown issue has happened
+                log.info("error in sending log to elk: " + Arrays.toString(e.getStackTrace()));
                 retryCount++;
             }
 

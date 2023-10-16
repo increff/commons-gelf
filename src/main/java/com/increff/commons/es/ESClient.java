@@ -14,6 +14,9 @@
 
 package com.increff.commons.es;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -34,7 +37,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
-
+@Log4j
 public class ESClient {
 	private RestHighLevelClient client;
 
@@ -43,6 +46,10 @@ public class ESClient {
 	private ESMetrics metrics;
 
 	private final static Logger LOGGER = Logger.getLogger(ESClient.class);
+
+	private static Long sendingCount = 0L;
+	private static Long sentCount = 0L;
+	private static Long lostCount = 0L;
 
 	public ESClient(String baseUrl, int port, String user, String password) {
 
@@ -86,6 +93,7 @@ public class ESClient {
 			public void onResponse(IndexResponse indexResponse) {
 				metrics.addNumProcessed(1);
 				metrics.addNumSuccess(1);
+				log.info("count sent successfully: " + ++sentCount);
 			}
 
 			@Override
@@ -94,7 +102,7 @@ public class ESClient {
 				metrics.addNumDropped(1);
 
 				String errorStackTrace = getErrorStackTraceString(e);
-				LOGGER.info("EsClient:RuntimeException: Unable to connect/send message to ElasticSearch\n" + errorStackTrace);
+				LOGGER.info("EsClient:RuntimeException: Unable to connect/send message to ElasticSearch\n fail count: " + ++lostCount +" error: " + errorStackTrace);
 			}
 		};
 	}
@@ -104,14 +112,33 @@ public class ESClient {
 		String json = null;
 		try {
 			json = ESEncoder.getJson(req);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			String errorStackTrace = getErrorStackTraceString(e);
 			LOGGER.info("EsClient:IOException: Json Encoding Failed\n" + errorStackTrace);
 		}
 
 		IndexRequest request = new IndexRequest(req.getApplication() + "-" + LocalDate.now());
 		request.source(json, XContentType.JSON);
+		if(req.getRequestName().equals("FORWARD_ORDER_NOTIFICATION_ORDER_CREATION")){
+			String shipmentId = null;
+			try{
+				ObjectMapper objectMapper = new ObjectMapper();
 
+				JsonNode jsonNode = objectMapper.readTree(req.getRequestBody());
+
+				shipmentId = jsonNode.get("shipmentId").asText();
+
+			} catch (Exception e) {
+				log.error("Error in getting shipment id from json");
+			}
+			log.info("Sending FONOC to ELK: requestName:" + req.getRequestName() + " shipment_id : " + shipmentId);
+			log.debug("Sending FONOC to ELK: requestBody" + req.getRequestBody());
+		}
+		else {
+			log.error("sending log to elk: requestName: " + req.getRequestName());
+			log.debug("sending log to elk: requestBody:" + req.getRequestBody());
+		}
+		log.info("count sending: " + ++sendingCount);
 		client.indexAsync(request, RequestOptions.DEFAULT, actionListener);
 	}
 
