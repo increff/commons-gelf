@@ -44,7 +44,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 @Log4j
 public class ESManager implements Runnable {
 
-    private static int RETRY_MAX_COUNT = 10;
+    private static int RETRY_MAX_COUNT = 0;
     private static int RETRY_WAIT_TIME = 60_000; // 60 seconds
     private static int MAX_QUEUE_SIZE = 1000;
     private static int EMPTY_WAIT_TIME = 1_000; // 1 second
@@ -201,11 +201,13 @@ public class ESManager implements Runnable {
                 }
             } catch (HttpStatusCodeException e) {
                 errStatus = e.getRawStatusCode();
-                log.error("error in sending log to elk: " + Arrays.toString(e.getStackTrace()));
+                log.info("Log missed : " + req.getRequestName());
+                log.error("error in sending log to elk: "+ e.getMessage() + Arrays.toString(e.getStackTrace()));
                 retryCount++;
             } catch (Exception e) {
                 errStatus = 9999; // Some uknown issue has happened
-                log.info("error in sending log to elk: " + Arrays.toString(e.getStackTrace()));
+                log.info("Log missed :" + req.getRequestName());
+                log.error("error in sending log to elk: " + e.getMessage() +  Arrays.toString(e.getStackTrace()));
                 retryCount++;
             }
 
