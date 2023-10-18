@@ -14,6 +14,7 @@
 
 package com.increff.commons.es;
 
+import lombok.extern.log4j.Log4j;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -35,6 +36,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
 
+@Log4j
 public class ESClient {
 	private RestHighLevelClient client;
 
@@ -104,7 +106,7 @@ public class ESClient {
 		String json = null;
 		try {
 			json = ESEncoder.getJson(req);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			String errorStackTrace = getErrorStackTraceString(e);
 			LOGGER.info("EsClient:IOException: Json Encoding Failed\n" + errorStackTrace);
 		}

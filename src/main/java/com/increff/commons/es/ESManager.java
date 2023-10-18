@@ -12,8 +12,10 @@ package com.increff.commons.es;/*
  * the License.
  */
 
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import lombok.extern.log4j.Log4j;
 import org.springframework.web.client.HttpStatusCodeException;
 
 /*
@@ -35,6 +37,7 @@ import org.springframework.web.client.HttpStatusCodeException;
  *
 
  */
+@Log4j
 public class ESManager implements Runnable {
 
     private static int RETRY_MAX_COUNT = 10;
@@ -96,6 +99,7 @@ public class ESManager implements Runnable {
         if (q.remainingCapacity() < 10) {
             ESRequest dropReq = getFirst();
             dropRequest(dropReq);
+            log.error("Dropping ELK request: queue capacity: " + q.remainingCapacity());
         }
         q.offer(req);
         m.addNumRecieved(1);
@@ -162,9 +166,11 @@ public class ESManager implements Runnable {
             } catch (HttpStatusCodeException e) {
                 errStatus = e.getRawStatusCode();
                 retryCount++;
+                log.error("error in sending log to elk: request_name: " + req.getRequestName() + " error: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
             } catch (Exception e) {
                 errStatus = 9999; // Some uknown issue has happened
                 retryCount++;
+                log.error("error in sending log to elk: request_name: " + req.getRequestName() + " error: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
             }
 
             if (errStatus == 200) {
