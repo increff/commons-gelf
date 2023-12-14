@@ -51,6 +51,7 @@ public class ESEncoder {
         g.writeStringField("http_status", req.getHttpStatus());
         g.writeStringField("end_timestamp", req.getEndTimestamp().withZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime().toString());
         g.writeStringField("http_method", req.getHttpMethod());
+        g.writeStringField("response_headers", req.getResponseHeaders());
         g.close();
         return w.toString();
     }

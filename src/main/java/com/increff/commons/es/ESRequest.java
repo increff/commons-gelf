@@ -51,4 +51,5 @@ public class ESRequest {
 	private String httpHeaders;
 	private String httpMethod;
 	private String httpStatus;
+	private String responseHeaders;
 }
