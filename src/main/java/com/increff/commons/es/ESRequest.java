@@ -52,4 +52,6 @@ public class ESRequest {
 	private String httpMethod;
 	private String httpStatus;
 	private String responseHeaders;
+	private String transactionId;
+	private String remarks;
 }
