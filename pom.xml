@@ -30,18 +30,24 @@
 
 		<!-- Maven Settings -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<maven.war.version>3.1.0</maven.war.version>
 		<maven.reports.version>2.9</maven.reports.version>
-		<java.version>1.8</java.version>
+		<java.version>21</java.version>
 
-		<nextscm.commons-spring.version>2.0.2</nextscm.commons-spring.version>
+<!--		<nextscm.commons-spring.version>2.0.2</nextscm.commons-spring.version>-->
+		<commons-springboot-server.version>0.0.1</commons-springboot-server.version>
+
+		<commons-springboot-server.version>0.0.1</commons-springboot-server.version>
+		<commons-springboot-db-mysql.version>0.0.1</commons-springboot-db-mysql.version>
+		<commons-springboot-audit-mysql.version>0.0.1</commons-springboot-audit-mysql.version>
+		<commons-springboot-test.version>0.0.1</commons-springboot-test.version>
 
 		<!-- Other dependencies -->
 		<h2.db.version>1.4.191</h2.db.version>
 		<!-- External Dependencies -->
-		<lombok.version>1.16.8</lombok.version>
+<!--		<lombok.version>1.16.8</lombok.version>-->
 		<!-- Provided Dependencies -->
 		<javax.servlet.version>3.1.0</javax.servlet.version>
 		<!-- Test Dependencies -->
@@ -49,19 +55,50 @@
 
 		<elastic.version>7.17.4</elastic.version>
 
-		<lombok.version>1.16.20</lombok.version>
+<!--		<lombok.version>1.16.20</lombok.version>-->
 
-		<log4j.version>1.2.17</log4j.version>
+<!--		<log4j.version>1.2.17</log4j.version>-->
 
 	</properties>
 
-	<dependencies>
+	<parent>
+		<!-- version for all the spring boot starters -->
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.2.0</version>
+	</parent>
 
-		<dependency>
-			<groupId>com.nextscm.commons</groupId>
-			<artifactId>commons-spring-client</artifactId>
-			<version>${nextscm.commons-spring.version}</version>
-		</dependency>
+	<dependencies>
+	<dependency>
+		<groupId>com.increff.commons</groupId>
+		<artifactId>commons-springboot-server</artifactId>
+		<version>${commons-springboot-server.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.increff.commons</groupId>
+		<artifactId>commons-springboot-db-mysql</artifactId>
+		<version>${commons-springboot-db-mysql.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.increff.commons</groupId>
+		<artifactId>commons-springboot-audit-mysql</artifactId>
+		<version>${commons-springboot-audit-mysql.version}</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.increff.commons</groupId>
+		<artifactId>commons-springboot-test</artifactId>
+		<version>${commons-springboot-test.version}</version>
+		<scope>test</scope>
+		<exclusions>
+			<exclusion>
+				<artifactId>android-json</artifactId>
+				<groupId>com.vaadin.external.google</groupId>
+			</exclusion>
+		</exclusions>
+	</dependency>
 
 		<!-- Provided -->
 		<dependency>
@@ -99,12 +136,12 @@
 			<version>${lombok.version}</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
+<!--		&lt;!&ndash; https://mvnrepository.com/artifact/log4j/log4j &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>log4j</groupId>-->
+<!--			<artifactId>log4j</artifactId>-->
+<!--			<version>${log4j.version}</version>-->
+<!--		</dependency>-->
 
 
 	</dependencies>
@@ -201,20 +238,20 @@
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin> todo : uncomment -->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-gpg-plugin</artifactId>-->
+<!--				<version>1.5</version>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>sign-artifacts</id>-->
+<!--						<phase>verify</phase>-->
+<!--						<goals>-->
+<!--							<goal>sign</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 

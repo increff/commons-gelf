@@ -15,6 +15,7 @@
 package com.increff.commons.es;
 
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
@@ -24,7 +25,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.message.BasicHeader;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
@@ -36,7 +37,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
 
-@Log4j
+import static org.apache.logging.log4j.LogManager.getLogger;
+
+@Log4j2
 public class ESClient {
 	private RestHighLevelClient client;
 
@@ -44,7 +47,7 @@ public class ESClient {
 
 	private ESMetrics metrics;
 
-	private final static Logger LOGGER = Logger.getLogger(ESClient.class);
+	private final static Logger LOGGER = getLogger(ESClient.class.getName());
 
 	public ESClient(String baseUrl, int port, String user, String password) {
 

@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.client.HttpStatusCodeException;
 
 /*
@@ -37,7 +38,7 @@ import org.springframework.web.client.HttpStatusCodeException;
  *
 
  */
-@Log4j
+@Log4j2
 public class ESManager implements Runnable {
 
     private static int RETRY_MAX_COUNT = 10;
