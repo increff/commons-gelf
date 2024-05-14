@@ -12,10 +12,14 @@ package com.increff.commons.es;/*
  * the License.
  */
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import lombok.extern.log4j.Log4j;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.web.client.HttpStatusCodeException;
 
 /*
@@ -197,6 +201,10 @@ public class ESManager implements Runnable {
             }
 
         }
+    }
+
+    public List<SearchHit> search(SearchSourceBuilder sourceBuilder, String indexPattern) throws IOException {
+        return c.search(sourceBuilder, indexPattern);
     }
 
 }
