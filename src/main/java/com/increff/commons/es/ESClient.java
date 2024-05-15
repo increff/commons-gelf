@@ -162,6 +162,7 @@ public class ESClient {
 			}
 			return list;
 		} catch (IOException e) {
+			LOGGER.error("EsClient:IOException: Error while searching\n" + e.getMessage(), e);
 			System.out.println(e.getMessage());
 		}
 		return new ArrayList<>();
