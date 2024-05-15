@@ -28,13 +28,24 @@ import org.apache.log4j.Logger;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.*;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.xcontent.XContentType;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Log4j
 public class ESClient {
@@ -128,6 +139,34 @@ public class ESClient {
 
 	public ESMetrics getMetrics() {
 		return metrics;
+	}
+
+	public List<SearchHit> search(SearchSourceBuilder sourceBuilder, String indexPattern) throws IOException {
+
+		try {
+
+			List<SearchHit> list= new ArrayList<>();
+			sourceBuilder.sort(SortBuilders.fieldSort("timestamp").order(SortOrder.DESC));
+
+			SearchRequest searchRequest = new SearchRequest();
+			if(!StringUtils.isEmpty(indexPattern)) {
+				searchRequest.indices(indexPattern);
+			}
+			searchRequest.source(sourceBuilder);
+
+			SearchResponse searchResponse = this.client.search(searchRequest, RequestOptions.DEFAULT);
+
+			SearchHits hits = searchResponse.getHits();
+			for (SearchHit hit : hits) {
+				list.add(hit);
+			}
+			return list;
+		} catch (IOException e) {
+			LOGGER.error("EsClient:IOException: Error while searching\n" + e.getMessage(), e);
+			System.out.println(e.getMessage());
+		}
+		return new ArrayList<>();
+
 	}
 
 	private static String getErrorStackTraceString(Exception e) {
