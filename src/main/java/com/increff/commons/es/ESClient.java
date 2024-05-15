@@ -37,6 +37,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.xcontent.XContentType;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -148,7 +149,7 @@ public class ESClient {
 			sourceBuilder.sort(SortBuilders.fieldSort("timestamp").order(SortOrder.DESC));
 
 			SearchRequest searchRequest = new SearchRequest();
-			if(Objects.nonNull(indexPattern) && !indexPattern.isEmpty()) {
+			if(!StringUtils.isEmpty(indexPattern)) {
 				searchRequest.indices(indexPattern);
 			}
 			searchRequest.source(sourceBuilder);
