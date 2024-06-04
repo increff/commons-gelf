@@ -23,7 +23,6 @@ import java.time.ZonedDateTime;
 /**
  * ELK Request component
  */
-
 @Builder
 @Getter
 @Setter

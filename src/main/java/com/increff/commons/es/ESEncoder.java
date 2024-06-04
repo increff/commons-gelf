@@ -21,14 +21,32 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.time.ZoneId;
 
+
+/**
+ * This class is responsible for encoding ESRequest objects into JSON format.
+ * It uses the Jackson library's JsonFactory to create a JsonGenerator, which is used to write the
+ * fields of the ESRequest to a JSON string.
+ */
 public class ESEncoder {
 
+    /**
+     * A static JsonFactory instance used to create JsonGenerator instances.
+     */
     private final static JsonFactory jsonFactory;
 
     static {
         jsonFactory = new JsonFactory();
     }
 
+    /**
+     * Converts the given ESRequest into a JSON string.
+     * This method writes the fields of the ESRequest to a JSON string using a JsonGenerator.
+     * If an IOException occurs during the operation, it is thrown to the caller.
+     *
+     * @param req The ESRequest to be converted into a JSON string.
+     * @return The JSON string representation of the ESRequest.
+     * @throws IOException If an error occurs during the operation.
+     */
     public static String getJson(ESRequest req) throws IOException {
         StringWriter w = new StringWriter();
         JsonGenerator g = jsonFactory.createGenerator(w);

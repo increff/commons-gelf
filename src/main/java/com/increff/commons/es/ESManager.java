@@ -15,28 +15,20 @@ package com.increff.commons.es;/*
 import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.client.HttpStatusCodeException;
 
-/*
+/**
  * This class is designed to create a fast and fault tolerant ES client.
- *
  * All new messages are queued, and a background thread tries to push to ELK.
  * This way calling methods are not slowed down
- *
  * If there is no space in queue, then oldest message is dropped(queue.pollFirst())
  * Then new message is put in queue.
- *
  * If a message delivery fails because of 402, 403, 404, 502 etc, then message is added to top of queue,
  * so that it is retried quickly. However, if queue is full, then that too will be dropped
- *
  *  If, there was no message, or status was 404 or 502 (given by load balancers) then the thread
  *  sleeps for RETRY_SLEEP_TIME milliseconds to avoid unnecessary loops
-
  * All ESManager methods are synchronized to ensure thread safety.
- *
-
  */
 @Log4j2
 public class ESManager implements Runnable {
@@ -53,6 +45,15 @@ public class ESManager implements Runnable {
     private int retryCount;
     private IESLogProvider logProvider;
 
+    /**
+     * Constructs a new ESManager with the specified base URL, port, user, and password.
+     * Initializes the queue with a maximum size, creates a new ESMetrics object, and a new ESClient with the provided parameters.
+     *
+     * @param baseUrl  The base URL for the ESClient.
+     * @param port     The port for the ESClient.
+     * @param user     The user for the ESClient.
+     * @param password The password for the ESClient.
+     */
     public ESManager(String baseUrl, int port, String user, String password) {
         this.q = new LinkedBlockingDeque<>(MAX_QUEUE_SIZE);
         this.m = new ESMetrics();
@@ -64,6 +65,10 @@ public class ESManager implements Runnable {
         this.logProvider = logProvider;
     }
 
+    /**
+     * Starts the ESManager if it is not already running.
+     * It creates a new thread and starts it, setting the running flag to true.
+     */
     public synchronized void start() {
         if (!running) {
             Thread t = new Thread(this);
@@ -72,6 +77,10 @@ public class ESManager implements Runnable {
         }
     }
 
+    /**
+     * Stops the ESManager if it is running.
+     * It sets the running flag to false and logs all pending messages in the queue.
+     */
     public synchronized void stop() {
         running = false;
         ESRequest msg = null;
@@ -81,20 +90,39 @@ public class ESManager implements Runnable {
         }
     }
 
+    /**
+     * Checks if the ESManager is currently running.
+     * @return true if the ESManager is running, false otherwise.
+     */
     public synchronized boolean isRunning() {
         return running;
     }
 
-    // METRICES
+    /**
+     * Retrieves the current size of the queue.
+     * @return The size of the queue.
+     */
     public synchronized int getQueueSize() {
         return q.size();
     }
 
+    /**
+     * Retrieves the metrics of the ESManager.
+     * @return The ESMetrics object containing the metrics of the ESManager.
+     */
     public synchronized ESMetrics getMetrics() {
         return m;
     }
 
-    // FOR MANAGING MESSAGES
+    /**
+     * Adds a new ESRequest to the queue.
+     * If the remaining capacity of the queue is less than 10, the oldest request is removed from the queue.
+     * The method also logs an error message indicating the dropping of an ELK request and the current queue capacity.
+     * After ensuring there is space in the queue, the new request is added to the queue
+     * and the number of received requests is incremented by 1.
+     *
+     * @param req The ESRequest to be added to the queue.
+     */
     public synchronized void add(ESRequest req) {
         // we want to keep the latest request, so remove first message if queue is full
         if (q.remainingCapacity() < 10) {

@@ -14,6 +14,21 @@
 
 package com.increff.commons.es;
 
+/**
+ * This enum represents the status of an ESRequest.
+ * The status can be one of the following:
+ */
 public enum ESRequestStatus {
-    SUCCESS, FAILURE, WARNING;
+    /**
+     * Indicates that the request was processed successfully.
+     */
+    SUCCESS,
+    /**
+     * Indicates that the request processing failed.
+     */
+    FAILURE,
+    /**
+     * Indicates that the request was processed but with warnings.
+     */
+    WARNING;
 }

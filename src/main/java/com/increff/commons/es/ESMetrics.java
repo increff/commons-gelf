@@ -13,43 +13,93 @@
  */
 
 package com.increff.commons.es;
-
+/**
+ * This class is responsible for maintaining metrics related to the processing of ESRequests.
+ * It keeps track of the number of requests processed, successful, dropped, and received.
+ * All methods are synchronized to ensure thread safety.
+ */
 public class ESMetrics {
 
+	/**
+	 * The number of requests processed.
+	 */
 	private int numProcessed;
+
+	/**
+	 * The number of successful requests.
+	 */
 	private int numSuccess;
+
+	/**
+	 * The number of dropped requests.
+	 */
 	private int numDropped;
+
+	/**
+	 * The number of received requests.
+	 */
 	private int numReceived;
 
+	/**
+	 * Retrieves the number of successful requests.
+	 * @return The number of successful requests.
+	 */
 	public synchronized int getNumSuccess() {
 		return numSuccess;
 	}
 
+	/**
+	 * Retrieves the number of processed requests.
+	 * @return The number of processed requests.
+	 */
 	public synchronized int getNumProcessed() {
 		return numProcessed;
 	}
 
+	/**
+	 * Retrieves the number of dropped requests.
+	 * @return The number of dropped requests.
+	 */
 	public synchronized int getNumDropped() {
 		return numDropped;
 	}
 
+	/**
+	 * Retrieves the number of received requests.
+	 * @return The number of received requests.
+	 */
 	public synchronized int getNumReceived() {
 		return numReceived;
 	}
 
-	// protected HELPER METHODS
+	/**
+	 * Increases the number of processed requests by the given value.
+	 * @param val The value to add to the number of processed requests.
+	 */
 	protected synchronized void addNumProcessed(int val) {
 		numProcessed += val;
 	}
 
+	/**
+	 * Increases the number of received requests by the given value.
+	 * @param val The value to add to the number of received requests.
+	 */
 	protected synchronized void addNumRecieved(int val) {
 		numReceived += val;
 	}
 
+	/**
+	 * Increases the number of successful requests by the given value.
+	 * @param val The value to add to the number of successful requests.
+	 */
 	protected synchronized void addNumSuccess(int val) {
 		numSuccess += val;
 	}
 
+	/**
+	 * Increases the number of dropped requests by the given value.
+	 * @param val The value to add to the number of dropped requests.
+	 */
 	protected synchronized void addNumDropped(int val) {
 		numDropped += val;
 	}
