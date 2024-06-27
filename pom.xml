@@ -38,8 +38,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
-<!--		<maven.war.version>3.1.0</maven.war.version>-->
-<!--		<maven.reports.version>2.9</maven.reports.version>-->
 		<java.version>21</java.version>
 
 	</properties>
