@@ -22,7 +22,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
-import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.*;
 
 import java.io.IOException;
@@ -31,8 +30,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.time.LocalDate;
 import java.util.Base64;
-
-import static org.apache.logging.log4j.LogManager.getLogger;
 
 /**
  * This class represents an Elasticsearch client with asynchronous capabilities.
@@ -52,7 +49,6 @@ public class ESClient {
 	 */
 	private ESMetrics metrics;
 
-	private final static Logger LOGGER = getLogger(ESClient.class.getName());
 
 	/**
 	 * Constructor of EsClient
@@ -123,7 +119,7 @@ public class ESClient {
 			client._transport().close();
 		} catch (IOException e) {
 			String errorStackTrace = getErrorStackTraceString(e);
-			LOGGER.info("EsClient:IOException: Failed to close client\n" + errorStackTrace);
+			log.info("EsClient:IOException: Failed to close client\n" + errorStackTrace);
 		}
 	}
 
