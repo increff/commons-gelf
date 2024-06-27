@@ -21,8 +21,6 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.logging.log4j.Logger;
 import org.elasticsearch.client.*;
@@ -72,59 +70,12 @@ public class ESClient {
 		this.metrics = new ESMetrics();
 		RestClientTransport transport = new RestClientTransport(httpClient, new JacksonJsonpMapper());
 		this.client = new ElasticsearchAsyncClient(transport);
-
-//		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-//		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(user, password));
-//
-//		RestClientBuilder restClientBuilder = RestClient.builder(new HttpHost(baseUrl, port, "http"));
-//		restClientBuilder.setHttpClientConfigCallback(getHttpClientConfig(credentialsProvider)).setDefaultHeaders(compatibilityHeaders());
-//
-//		this.client = new RestHighLevelClient(restClientBuilder);
-//		setupListener();
 	}
 
 	private String getBasicAuth(String username, String password) {
 		String encodedAuth = Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes());
 		return String.format("Basic %s", encodedAuth);
 	}
-
-//	private Header[] compatibilityHeaders() {
-//		return new Header[]{
-//				new BasicHeader(HttpHeaders.ACCEPT, "application/vnd.elasticsearch+json;compatible-with=7"),
-//				new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/vnd.elasticsearch+json;compatible-with=7")
-//		};
-//	}
-
-//    private RestClientBuilder.HttpClientConfigCallback getHttpClientConfig(CredentialsProvider credentialsProvider) {
-//        return new RestClientBuilder.HttpClientConfigCallback() {
-//            @Override
-//            public HttpAsyncClientBuilder customizeHttpClient(
-//                    HttpAsyncClientBuilder httpClientBuilder) {
-//                return httpClientBuilder
-//                        .setDefaultCredentialsProvider(credentialsProvider);
-//            }
-//        };
-//    }
-
-    // Listener for post call action
-//	private void setupListener() {
-//		actionListener = new ActionListener<IndexResponse>() {
-//			@Override
-//			public void onResponse(IndexResponse indexResponse) {
-//				metrics.addNumProcessed(1);
-//				metrics.addNumSuccess(1);
-//			}
-//
-//			@Override
-//			public void onFailure(Exception e) {
-//				metrics.addNumProcessed(1);
-//				metrics.addNumDropped(1);
-//
-//				String errorStackTrace = getErrorStackTraceString(e);
-//				LOGGER.info("EsClient:RuntimeException: Unable to connect/send message to ElasticSearch\n" + errorStackTrace);
-//			}
-//		};
-//	}
 
 	/**
 	 * Sends an asynchronous request to Elasticsearch.
@@ -142,7 +93,7 @@ public class ESClient {
 			json = ESEncoder.getJson(req);
 		} catch (Exception e) {
 			String errorStackTrace = getErrorStackTraceString(e);
-			LOGGER.info("EsClient:IOException: Json Encoding Failed\n" + errorStackTrace);
+			log.info("EsClient:IOException: Json Encoding Failed\n" + errorStackTrace);
 		}
 		StringReader jsonStringReader = new StringReader(json);
 		client.index(i -> {
@@ -155,14 +106,11 @@ public class ESClient {
 				metrics.addNumDropped(1);
 
 				String errorStackTrace = getErrorStackTraceString(exception);
-				LOGGER.info("EsClient:RuntimeException: Unable to connect/send message to ElasticSearch\n" + errorStackTrace);
+				log.info("EsClient:RuntimeException: Unable to connect/send message to ElasticSearch\n" + errorStackTrace);
 			} else {
 				metrics.addNumProcessed(1);
 				metrics.addNumSuccess(1);
 			}});
-//		IndexRequest request = new IndexRequest(req.getApplication() + "-" + LocalDate.now());
-//		request.source(json, XContentType.JSON);
-//		client.indexAsync(request, RequestOptions.DEFAULT, actionListener);
 	}
 
 	/**
