@@ -37,15 +37,14 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.xcontent.XContentType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Log4j
 public class ESClient {
@@ -141,7 +140,7 @@ public class ESClient {
 		return metrics;
 	}
 
-	public List<SearchHit> search(SearchSourceBuilder sourceBuilder, String indexPattern) throws IOException {
+	public List<SearchHit> search(SearchSourceBuilder sourceBuilder, List<String> indexPatternList) throws IOException {
 
 		try {
 
@@ -149,8 +148,8 @@ public class ESClient {
 			sourceBuilder.sort(SortBuilders.fieldSort("timestamp").order(SortOrder.DESC));
 
 			SearchRequest searchRequest = new SearchRequest();
-			if(!StringUtils.isEmpty(indexPattern)) {
-				searchRequest.indices(indexPattern);
+			if(!CollectionUtils.isEmpty(indexPatternList)) {
+				searchRequest.indices(indexPatternList.toArray(new String[0]));
 			}
 			searchRequest.source(sourceBuilder);
 

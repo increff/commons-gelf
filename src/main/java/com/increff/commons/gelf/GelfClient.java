@@ -49,6 +49,7 @@ public class GelfClient extends Thread {
 		send(json);
 	}
 
+
 	protected void send(String gelfMessage) throws RestClientException {
 		// Note the body object as first parameter!
 		HttpEntity<?> httpEntity = new HttpEntity<String>(gelfMessage, headers);

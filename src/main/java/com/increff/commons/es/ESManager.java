@@ -203,8 +203,8 @@ public class ESManager implements Runnable {
         }
     }
 
-    public List<SearchHit> search(SearchSourceBuilder sourceBuilder, String indexPattern) throws IOException {
-        return c.search(sourceBuilder, indexPattern);
+    public List<SearchHit> search(SearchSourceBuilder sourceBuilder, List<String> indexPatternList) throws IOException {
+        return c.search(sourceBuilder, indexPatternList);
     }
 
 }
